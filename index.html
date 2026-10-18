@@ -34,7 +34,77 @@
         body {
             background-color: var(--pearl-bg);
             color: var(--text-main);
+            min-height: 100vh;
+        }
+
+        /* شاشة تسجيل الدخول والحماية */
+        #loginScreen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--navy-primary);
             display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+
+        .login-card {
+            background: var(--pearl-card);
+            padding: 40px;
+            border-radius: 16px;
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+            box-shadow: 0 20px 25px -5px rgba(0,0,0,0.3);
+        }
+
+        .login-card i {
+            font-size: 48px;
+            color: var(--gold-accent);
+            margin-bottom: 16px;
+        }
+
+        .login-card h2 {
+            color: var(--navy-primary);
+            margin-bottom: 8px;
+            font-size: 20px;
+        }
+
+        .login-card p {
+            color: var(--text-muted);
+            font-size: 14px;
+            margin-bottom: 24px;
+        }
+
+        .login-card input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 16px;
+            text-align: center;
+            letter-spacing: 4px;
+            margin-bottom: 16px;
+            outline: none;
+        }
+
+        .login-card input:focus {
+            border-color: var(--gold-accent);
+        }
+
+        .error-msg {
+            color: #DC2626;
+            font-size: 13px;
+            display: none;
+            margin-bottom: 12px;
+        }
+
+        /* الهيكل العام بعد التسجيل */
+        .app-container {
+            display: none;
             min-height: 100vh;
         }
 
@@ -264,7 +334,6 @@
         }
 
         .badge-upcoming { background: #E0F2FE; color: #0369A1; }
-        .badge-completed { background: #DCFCE7; color: #15803D; }
 
         /* النوافذ المنبثقة (Modals) */
         .modal {
@@ -321,7 +390,6 @@
             margin-top: 24px;
         }
 
-        /* الطباعة للمحاضر الرسمية */
         @media print {
             .sidebar, .top-header, .btn-primary, .modal-actions { display: none !important; }
             .main-content { margin-right: 0 !important; padding: 0 !important; }
@@ -331,164 +399,169 @@
 </head>
 <body>
 
-    <!-- القائمة الجانبية -->
-    <aside class="sidebar">
-        <div>
-            <div class="brand">
-                <i class="fa-solid fa-user-tie"></i>
-                <h2>السكرتير الخاص</h2>
-            </div>
-            <ul class="nav-links">
-                <li class="nav-item">
-                    <a class="nav-link active" onclick="switchTab('dashboard')">
-                        <i class="fa-solid fa-chart-line"></i>
-                        لوحة التحكم
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" onclick="switchTab('meetings')">
-                        <i class="fa-solid fa-calendar-check"></i>
-                        تنظيم الاجتماعات
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" onclick="switchTab('agenda')">
-                        <i class="fa-solid fa-list-check"></i>
-                        بوابة المحاور
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" onclick="switchTab('minutes')">
-                        <i class="fa-solid fa-file-signature"></i>
-                        محاضر الاجتماعات
-                    </a>
-                </li>
-            </ul>
+    <!-- شاشة الحماية بالرمز -->
+    <div id="loginScreen">
+        <div class="login-card">
+            <i class="fa-solid fa-user-shield"></i>
+            <h2>المساعد الإداري الخاص</h2>
+            <p>أدخل رمز المرور للوصول إلى النظام</p>
+            <input type="password" id="passInput" placeholder="••••" maxlength="8">
+            <div id="errorMsg" class="error-msg">رمز المرور غير صحيح!</div>
+            <button class="btn-primary btn-gold" style="width: 100%; justify-content: center;" onclick="checkPassword()">دخول النظام</button>
         </div>
-    </aside>
+    </div>
 
-    <!-- المحتوى الرئيسي -->
-    <main class="main-content">
-        <!-- الترويسة والبحث الشامل -->
-        <header class="top-header">
-            <div class="search-box">
-                <i class="fa-solid fa-magnifying-glass"></i>
-                <input type="text" id="globalSearch" placeholder="بحث شامل عن اجتماع، محاور، أو محضر..." onkeyup="handleSearch()">
+    <!-- تطبيق المساعد الإداري -->
+    <div class="app-container" id="appContainer">
+        <!-- القائمة الجانبية -->
+        <aside class="sidebar">
+            <div>
+                <div class="brand">
+                    <i class="fa-solid fa-user-tie"></i>
+                    <h2>السكرتير الخاص</h2>
+                </div>
+                <ul class="nav-links">
+                    <li class="nav-item">
+                        <a class="nav-link active" onclick="switchTab('dashboard')">
+                            <i class="fa-solid fa-chart-line"></i> لوحة التحكم
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" onclick="switchTab('meetings')">
+                            <i class="fa-solid fa-calendar-check"></i> تنظيم الاجتماعات
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" onclick="switchTab('agenda')">
+                            <i class="fa-solid fa-list-check"></i> بوابة المحاور
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" onclick="switchTab('minutes')">
+                            <i class="fa-solid fa-file-signature"></i> محاضر الاجتماعات
+                        </a>
+                    </li>
+                </ul>
             </div>
-            <button class="btn-primary btn-gold" onclick="openModal('newMeetingModal')">
-                <i class="fa-solid fa-plus"></i> اجتماع جديد
+            <button class="btn-primary" style="background: var(--navy-secondary); justify-content: center;" onclick="logout()">
+                <i class="fa-solid fa-lock"></i> قفل النظام
             </button>
-        </header>
+        </aside>
 
-        <!-- 1. لوحة التحكم -->
-        <section id="dashboard" class="section-view active">
-            <h1 class="page-title">ملخص النشاط الإداري</h1>
-            <div class="cards-grid">
-                <div class="card">
-                    <div class="card-header">
-                        <span class="card-title">اجتماعات اليوم</span>
-                        <i class="fa-solid fa-calendar-day" style="color: var(--gold-accent);"></i>
-                    </div>
-                    <h2 id="todayCount">0</h2>
+        <!-- المحتوى الرئيسي -->
+        <main class="main-content">
+            <header class="top-header">
+                <div class="search-box">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" id="globalSearch" placeholder="بحث شامل..." onkeyup="handleSearch()">
                 </div>
-                <div class="card">
-                    <div class="card-header">
-                        <span class="card-title">محاور معلقة</span>
-                        <i class="fa-solid fa-clock" style="color: #0369A1;"></i>
+                <button class="btn-primary btn-gold" onclick="openModal('newMeetingModal')">
+                    <i class="fa-solid fa-plus"></i> اجتماع جديد
+                </button>
+            </header>
+
+            <!-- 1. لوحة التحكم -->
+            <section id="dashboard" class="section-view active">
+                <h1 class="page-title">ملخص النشاط الإداري</h1>
+                <div class="cards-grid">
+                    <div class="card">
+                        <div class="card-header">
+                            <span class="card-title">اجتماعات اليوم</span>
+                            <i class="fa-solid fa-calendar-day" style="color: var(--gold-accent);"></i>
+                        </div>
+                        <h2 id="todayCount">0</h2>
                     </div>
-                    <h2 id="pendingTopicsCount">0</h2>
-                </div>
-                <div class="card">
-                    <div class="card-header">
-                        <span class="card-title">محاضر مكتملة</span>
-                        <i class="fa-solid fa-file-circle-check" style="color: #15803D;"></i>
+                    <div class="card">
+                        <div class="card-header">
+                            <span class="card-title">محاور معلقة</span>
+                            <i class="fa-solid fa-clock" style="color: #0369A1;"></i>
+                        </div>
+                        <h2 id="pendingTopicsCount">0</h2>
                     </div>
-                    <h2 id="completedMinutesCount">0</h2>
+                    <div class="card">
+                        <div class="card-header">
+                            <span class="card-title">محاضر مكتملة</span>
+                            <i class="fa-solid fa-file-circle-check" style="color: #15803D;"></i>
+                        </div>
+                        <h2 id="completedMinutesCount">0</h2>
+                    </div>
                 </div>
-            </div>
 
-            <h2 class="page-title" style="font-size: 18px;">الاجتماعات القادمة</h2>
-            <div class="table-container">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>عنوان الاجتماع</th>
-                            <th>التاريخ والوقت</th>
-                            <th>المكان / الرابط</th>
-                            <th>الحالة</th>
-                        </tr>
-                    </thead>
-                    <tbody id="dashboardMeetingsTable">
-                        <!-- يتم إدراج البيانات تلقائياً -->
-                    </tbody>
-                </table>
-            </div>
-        </section>
+                <h2 class="page-title" style="font-size: 18px;">الاجتماعات القادمة</h2>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>عنوان الاجتماع</th>
+                                <th>التاريخ والوقت</th>
+                                <th>المكان / الرابط</th>
+                                <th>الحالة</th>
+                            </tr>
+                        </thead>
+                        <tbody id="dashboardMeetingsTable"></tbody>
+                    </table>
+                </div>
+            </section>
 
-        <!-- 2. تنظيم الاجتماعات -->
-        <section id="meetings" class="section-view">
-            <h1 class="page-title">إدارة وتنظيم الاجتماعات</h1>
-            <div class="table-container">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>الاجتماع</th>
-                            <th>التاريخ والوقت</th>
-                            <th>الحضور</th>
-                            <th>الحالة</th>
-                            <th>الإجراءات</th>
-                        </tr>
-                    </thead>
-                    <tbody id="fullMeetingsTable">
-                        <!-- يتم إدراج البيانات -->
-                    </tbody>
-                </table>
-            </div>
-        </section>
+            <!-- 2. تنظيم الاجتماعات -->
+            <section id="meetings" class="section-view">
+                <h1 class="page-title">إدارة وتنظيم الاجتماعات</h1>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>الاجتماع</th>
+                                <th>التاريخ والوقت</th>
+                                <th>الحضور</th>
+                                <th>الحالة</th>
+                                <th>الإجراءات</th>
+                            </tr>
+                        </thead>
+                        <tbody id="fullMeetingsTable"></tbody>
+                    </table>
+                </div>
+            </section>
 
-        <!-- 3. بوابة محاور الاجتماعات -->
-        <section id="agenda" class="section-view">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                <h1 class="page-title">بوابة محاور الاجتماعات والأجندة</h1>
-                <button class="btn-primary" onclick="openModal('newTopicModal')"><i class="fa-solid fa-plus"></i> إضافة محور جديد</button>
-            </div>
-            <div class="cards-grid" id="topicsGrid">
-                <!-- كروت المحاور -->
-            </div>
-        </section>
+            <!-- 3. بوابة محاور الاجتماعات -->
+            <section id="agenda" class="section-view">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h1 class="page-title">بوابة محاور الاجتماعات والأجندة</h1>
+                    <button class="btn-primary" onclick="openModal('newTopicModal')"><i class="fa-solid fa-plus"></i> إضافة محور جديد</button>
+                </div>
+                <div class="cards-grid" id="topicsGrid"></div>
+            </section>
 
-        <!-- 4. محاضر الاجتماعات -->
-        <section id="minutes" class="section-view">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                <h1 class="page-title">محاضر الاجتماعات الرسمية</h1>
-                <button class="btn-primary" onclick="openModal('newMinuteModal')"><i class="fa-solid fa-pen-nib"></i> صياغة محضر جديد</button>
-            </div>
-            <div id="minutesList" style="display: flex; flex-direction: column; gap: 20px;">
-                <!-- قائمة المحاضر -->
-            </div>
-        </section>
-    </main>
+            <!-- 4. محاضر الاجتماعات -->
+            <section id="minutes" class="section-view">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h1 class="page-title">محاضر الاجتماعات الرسمية</h1>
+                    <button class="btn-primary" onclick="openModal('newMinuteModal')"><i class="fa-solid fa-pen-nib"></i> صياغة محضر جديد</button>
+                </div>
+                <div id="minutesList" style="display: flex; flex-direction: column; gap: 20px;"></div>
+            </section>
+        </main>
+    </div>
 
-    <!-- نافذة إضافة اجتماع جديد -->
+    <!-- النوافذ المنبثقة -->
     <div class="modal" id="newMeetingModal">
         <div class="modal-content">
             <h2 style="margin-bottom: 20px; color: var(--navy-primary);">جدولة اجتماع جديد</h2>
             <form id="meetingForm" onsubmit="saveMeeting(event)">
                 <div class="form-group">
                     <label>عنوان الاجتماع</label>
-                    <input type="text" id="mTitle" required placeholder="مثال: اجتماع لجنة المتابعة الدوري">
+                    <input type="text" id="mTitle" required placeholder="عنوان الاجتماع">
                 </div>
                 <div class="form-group">
                     <label>التاريخ والوقت</label>
                     <input type="datetime-local" id="mDateTime" required>
                 </div>
                 <div class="form-group">
-                    <label>مكان الاجتماع / الرابط</label>
-                    <input type="text" id="mLocation" placeholder="قاعة الاجتماعات الرئيسية أو رابط Teams">
+                    <label>المكان / الرابط</label>
+                    <input type="text" id="mLocation" placeholder="المكان">
                 </div>
                 <div class="form-group">
                     <label>قائمة الحضور</label>
-                    <input type="text" id="mAttendees" placeholder="أدخل الأسماء تفصلها فاصلة">
+                    <input type="text" id="mAttendees" placeholder="الأسماء تفصلها فاصلة">
                 </div>
                 <div class="modal-actions">
                     <button type="button" class="btn-primary" style="background: var(--text-muted);" onclick="closeModal('newMeetingModal')">إلغاء</button>
@@ -498,14 +571,13 @@
         </div>
     </div>
 
-    <!-- نافذة إضافة محور جديد -->
     <div class="modal" id="newTopicModal">
         <div class="modal-content">
             <h2 style="margin-bottom: 20px; color: var(--navy-primary);">إضافة محور مناقشة</h2>
             <form id="topicForm" onsubmit="saveTopic(event)">
                 <div class="form-group">
                     <label>عنوان المحور</label>
-                    <input type="text" id="tTitle" required placeholder="مثال: استعراض الخطة الخمسية">
+                    <input type="text" id="tTitle" required placeholder="عنوان المحور">
                 </div>
                 <div class="form-group">
                     <label>الاجتماع المرتبط</label>
@@ -513,7 +585,7 @@
                 </div>
                 <div class="form-group">
                     <label>تفاصيل المحور</label>
-                    <textarea id="tDetails" rows="4" placeholder="شرح تفصيلي للمحور..."></textarea>
+                    <textarea id="tDetails" rows="4" placeholder="التفاصيل..."></textarea>
                 </div>
                 <div class="modal-actions">
                     <button type="button" class="btn-primary" style="background: var(--text-muted);" onclick="closeModal('newTopicModal')">إلغاء</button>
@@ -523,7 +595,6 @@
         </div>
     </div>
 
-    <!-- نافذة إعداد محضر اجتماع -->
     <div class="modal" id="newMinuteModal">
         <div class="modal-content" style="max-width: 700px;">
             <h2 style="margin-bottom: 20px; color: var(--navy-primary);">إعداد محضر اجتماع رسمي</h2>
@@ -533,23 +604,49 @@
                     <select id="minMeetingSelect" required></select>
                 </div>
                 <div class="form-group">
-                    <label>القرارات والتوصيات المتخذة</label>
-                    <textarea id="minDecisions" rows="4" required placeholder="اكتب التوصيات والقرارات التي تم التوصل إليها..."></textarea>
+                    <label>القرارات والتوصيات</label>
+                    <textarea id="minDecisions" rows="4" required placeholder="التوصيات..."></textarea>
                 </div>
                 <div class="form-group">
-                    <label>المكلفون بالـمتابعة والمهام</label>
-                    <input type="text" id="minAssignees" placeholder="مثال: م. فهد (تجهيز التقرير)">
+                    <label>المكلفون بالمتابعة</label>
+                    <input type="text" id="minAssignees" placeholder="المسؤولون">
                 </div>
                 <div class="modal-actions">
                     <button type="button" class="btn-primary" style="background: var(--text-muted);" onclick="closeModal('newMinuteModal')">إلغاء</button>
-                    <button type="submit" class="btn-primary btn-gold">حفظ المحضر رسمياً</button>
+                    <button type="submit" class="btn-primary btn-gold">حفظ المحضر</button>
                 </div>
             </form>
         </div>
     </div>
 
     <script>
-        // إدارة البيانات في الـ LocalStorage
+        // كلمة المرور المحددة افتراضياً (يمكنك تغييرها هنا)
+        const SECRET_PIN = "1234";
+
+        function checkPassword() {
+            const inputVal = document.getElementById('passInput').value;
+            if (inputVal === SECRET_PIN) {
+                document.getElementById('loginScreen').style.display = 'none';
+                document.getElementById('appContainer').style.display = 'flex';
+                sessionStorage.setItem('isLogged', 'true');
+                renderAll();
+            } else {
+                document.getElementById('errorMsg').style.display = 'block';
+            }
+        }
+
+        function logout() {
+            sessionStorage.removeItem('isLogged');
+            location.reload();
+        }
+
+        // حفظ تسجيل الدخول خلال الجلسة
+        if (sessionStorage.getItem('isLogged') === 'true') {
+            document.getElementById('loginScreen').style.display = 'none';
+            document.getElementById('appContainer').style.display = 'flex';
+        }
+
+        // إدارة البيانات
         let meetings = JSON.parse(localStorage.getItem('assistant_meetings')) || [];
         let topics = JSON.parse(localStorage.getItem('assistant_topics')) || [];
         let minutes = JSON.parse(localStorage.getItem('assistant_minutes')) || [];
@@ -561,11 +658,9 @@
             renderAll();
         }
 
-        // التنقل بين الأقسام
         function switchTab(tabId) {
             document.querySelectorAll('.section-view').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('.nav-link').forEach(el => el.classList.remove('active'));
-            
             document.getElementById(tabId).classList.add('active');
             event.currentTarget.classList.add('active');
         }
@@ -579,85 +674,68 @@
             document.getElementById(id).classList.remove('active');
         }
 
-        // إدراج البيانات في القوائم المنسدلة
         function populateSelects() {
             const tSelect = document.getElementById('tMeetingSelect');
             const minSelect = document.getElementById('minMeetingSelect');
-            
             const options = meetings.map(m => `<option value="${m.id}">${m.title}</option>`).join('');
-            tSelect.innerHTML = options || '<option value="">لا توجد اجتماعات مضافة</option>';
-            minSelect.innerHTML = options || '<option value="">لا توجد اجتماعات مضافة</option>';
+            tSelect.innerHTML = options || '<option value="">لا توجد اجتماعات</option>';
+            minSelect.innerHTML = options || '<option value="">لا توجد اجتماعات</option>';
         }
 
-        // حفظ اجتماع جديد
         function saveMeeting(e) {
             e.preventDefault();
-            const newM = {
+            meetings.push({
                 id: Date.now(),
                 title: document.getElementById('mTitle').value,
                 dateTime: document.getElementById('mDateTime').value,
                 location: document.getElementById('mLocation').value,
                 attendees: document.getElementById('mAttendees').value,
                 status: 'قادم'
-            };
-            meetings.push(newM);
+            });
             closeModal('newMeetingModal');
             document.getElementById('meetingForm').reset();
             saveData();
         }
 
-        // حفظ محور جديد
         function saveTopic(e) {
             e.preventDefault();
-            const newT = {
+            topics.push({
                 id: Date.now(),
                 title: document.getElementById('tTitle').value,
                 meetingId: document.getElementById('tMeetingSelect').value,
                 details: document.getElementById('tDetails').value
-            };
-            topics.push(newT);
+            });
             closeModal('newTopicModal');
             document.getElementById('topicForm').reset();
             saveData();
         }
 
-        // حفظ محضر جديد
         function saveMinute(e) {
             e.preventDefault();
-            const newMin = {
+            minutes.push({
                 id: Date.now(),
                 meetingId: document.getElementById('minMeetingSelect').value,
                 decisions: document.getElementById('minDecisions').value,
                 assignees: document.getElementById('minAssignees').value,
                 date: new Date().toLocaleDateString('ar-SA')
-            };
-            minutes.push(newMin);
+            });
             closeModal('newMinuteModal');
             document.getElementById('minuteForm').reset();
             saveData();
         }
 
-        // عرض وطباعة المحضر
-        function printMinute() {
-            window.print();
-        }
-
-        // العرض والتحديث الشامل
         function renderAll() {
-            // تحديث الأرقام الإحصائية
             document.getElementById('todayCount').innerText = meetings.length;
             document.getElementById('pendingTopicsCount').innerText = topics.length;
             document.getElementById('completedMinutesCount').innerText = minutes.length;
 
-            // جدول لوحة التحكم والجدول الكامل
             const dashTable = document.getElementById('dashboardMeetingsTable');
             const fullTable = document.getElementById('fullMeetingsTable');
-            
             dashTable.innerHTML = '';
             fullTable.innerHTML = '';
 
             meetings.forEach(m => {
-                const row = `
+                dashTable.innerHTML += `
                     <tr>
                         <td><strong>${m.title}</strong></td>
                         <td>${new Date(m.dateTime).toLocaleString('ar-SA')}</td>
@@ -665,23 +743,17 @@
                         <td><span class="badge badge-upcoming">${m.status}</span></td>
                     </tr>
                 `;
-                dashTable.innerHTML += row;
-
-                const fullRow = `
+                fullTable.innerHTML += `
                     <tr>
                         <td><strong>${m.title}</strong></td>
                         <td>${new Date(m.dateTime).toLocaleString('ar-SA')}</td>
                         <td>${m.attendees || 'غير محدد'}</td>
                         <td><span class="badge badge-upcoming">${m.status}</span></td>
-                        <td>
-                            <button class="btn-primary" style="padding: 6px 12px; font-size: 12px;" onclick="deleteMeeting(${m.id})">حذف</button>
-                        </td>
+                        <td><button class="btn-primary" style="padding: 6px 12px; font-size: 12px;" onclick="deleteMeeting(${m.id})">حذف</button></td>
                     </tr>
                 `;
-                fullTable.innerHTML += fullRow;
             });
 
-            // عرض كروت المحاور
             const topicsGrid = document.getElementById('topicsGrid');
             topicsGrid.innerHTML = '';
             topics.forEach(t => {
@@ -695,7 +767,6 @@
                 `;
             });
 
-            // عرض المحاضر الرسمية
             const minutesList = document.getElementById('minutesList');
             minutesList.innerHTML = '';
             minutes.forEach(min => {
@@ -703,7 +774,7 @@
                 minutesList.innerHTML += `
                     <div class="card printable-minute">
                         <div style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--border-color); padding-bottom: 12px; margin-bottom: 12px;">
-                            <h3 class="card-title">محضر اجتماع: ${parentM ? parentM.title : 'اجتماع رسمى'}</h3>
+                            <h3 class="card-title">محضر اجتماع: ${parentM ? parentM.title : 'اجتماع رسمي'}</h3>
                             <span style="font-size: 12px; color: var(--text-muted);">التاريخ: ${min.date}</span>
                         </div>
                         <div style="margin-bottom: 12px;">
@@ -713,8 +784,8 @@
                         <div style="margin-bottom: 12px;">
                             <strong>المكلفون بالمتابعة:</strong> ${min.assignees}
                         </div>
-                        <button class="btn-primary btn-gold" style="padding: 6px 12px; font-size: 12px;" onclick="printMinute()">
-                            <i class="fa-solid fa-print"></i> طباعة المحضر الرسمية
+                        <button class="btn-primary btn-gold" style="padding: 6px 12px; font-size: 12px;" onclick="window.print()">
+                            <i class="fa-solid fa-print"></i> طباعة المحضر
                         </button>
                     </div>
                 `;
@@ -726,18 +797,12 @@
             saveData();
         }
 
-        // محرك البحث الشامل
         function handleSearch() {
             const query = document.getElementById('globalSearch').value.toLowerCase();
-            const rows = document.querySelectorAll('tbody tr');
-            rows.forEach(row => {
-                const text = row.innerText.toLowerCase();
-                row.style.display = text.includes(query) ? '' : 'none';
+            document.querySelectorAll('tbody tr').forEach(row => {
+                row.style.display = row.innerText.toLowerCase().includes(query) ? '' : 'none';
             });
         }
-
-        // التشغيل الأول عند الفتح
-        renderAll();
     </script>
 </body>
 </html>
